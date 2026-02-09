@@ -1,0 +1,151 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.container {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 40px 30px;
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+.message {
+  font-size: 18px;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.buttons {
+  margin-top: 30px;
+  position: relative;
+  height: 90px;
+}
+
+button {
+  border: none;
+  padding: 14px 30px;
+  font-size: 18px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.yesBtn {
+  background: #ff4d6d;
+  color: white;
+}
+
+.noBtn {
+  background: white;
+  color: #ff4d6d;
+  position: absolute;
+  margin-left: 20px;
+  transition: transform 0.2s;
+}
+
+/* 💍 Ring animation */
+.noBtn::after {
+  content: "💍";
+  position: absolute;
+  top: -25px;
+  right: -15px;
+  animation: ring 1s infinite;
+}
+
+@keyframes ring {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-15deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* 💬 Tooltip */
+.tooltip {
+  position: fixed;
+  background: #ff4d6d;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: pop 0.2s ease-in-out;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 🎉 Confetti */
+.confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.confetti span {
+  position: absolute;
+  font-size: 24px;
+  animation: fall 3s linear infinite;
+  left: calc(100% * var(--i));
+}
+
+.confetti span:nth-child(n) {
+  left: calc(100% * random());
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(-10%);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110%);
+    opacity: 0;
+  }
+}
+
+/* ❤️ YES message */
+.yes {
+  margin-top: 30px;
+  font-size: 22px;
+  color: #ffb3c1;
+}
+
+/* 📱 Mobile tweaks */
+@media (max-width: 480px) {
+  .card {
+    padding: 30px 20px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 12px 24px;
+  }
+}

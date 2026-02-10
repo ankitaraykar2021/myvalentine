@@ -24,7 +24,7 @@
 
 .buttons {
   position: relative;
-  height: 120px;
+  height: 140px;
   margin-top: 20px;
 }
 
@@ -33,12 +33,12 @@ button {
   border-radius: 14px;
   padding: 14px 28px;
   font-size: 1.1rem;
-  cursor: pointer;
 }
 
 .yesBtn {
   background: linear-gradient(135deg, #ff4d6d, #ff758f);
   color: white;
+  cursor: pointer;
   animation: pulse 1.5s infinite;
 }
 
@@ -46,6 +46,8 @@ button {
   background: #444;
   color: #eee;
   position: absolute;
+  pointer-events: none; /* 🚫 Non-clickable on desktop & mobile */
+  transition: top 0.6s ease, left 0.6s ease;
 }
 
 @keyframes pulse {
@@ -64,29 +66,11 @@ button {
   pointer-events: none;
 }
 
-.heart {
-  position: fixed;
-  bottom: 50%;
-  animation: explode 2.5s ease-out forwards;
-  pointer-events: none;
-}
-
-@keyframes explode {
-  0% {
-    transform: translateY(0) scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-400px) scale(1.5);
-    opacity: 0;
-  }
-}
-
 .yesText {
   margin-top: 20px;
   font-size: 1.4rem;
 }
-/* ❤️ Start Heart Overlay */
+
 .heartOverlay {
   position: fixed;
   inset: 0;
@@ -107,6 +91,7 @@ button {
   75% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+
 .heartBlast {
   position: fixed;
   left: 50%;
@@ -114,7 +99,9 @@ button {
   transform: translate(-50%, -50%);
   animation: explode 1.8s ease-out forwards;
   pointer-events: none;
+  z-index: 99999; /* 🔥 THIS IS THE KEY */
 }
+
 
 @keyframes explode {
   0% {
@@ -131,4 +118,3 @@ button {
     opacity: 0;
   }
 }
-

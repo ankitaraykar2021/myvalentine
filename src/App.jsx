@@ -15,39 +15,39 @@ const funnyMessages = [
 function App() {
   const [answer, setAnswer] = useState("");
   const [noStyle, setNoStyle] = useState({});
-  const [tooltip, setTooltip] = useState({
-    show: false,
-    text: "",
-    x: 0,
-    y: 0
-  });
+  const [tooltip, setTooltip] = useState({ show: false, text: "", x: 0, y: 0 });
   const [showConfetti, setShowConfetti] = useState(false);
 
   const audioRef = useRef(null);
 
   const playMusic = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {});
-    }
+    audioRef.current?.play().catch(() => {});
   };
 
   const handleNoAttempt = (e) => {
-    const randomMsg =
+    e.preventDefault();
+
+    const msg =
       funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+
+    const xPos = e.clientX || e.touches?.[0]?.clientX || 100;
+    const yPos = e.clientY || e.touches?.[0]?.clientY || 100;
 
     setTooltip({
       show: true,
-      text: randomMsg,
-      x: e.clientX + 15,
-      y: e.clientY + 15
+      text: msg,
+      x: xPos + 15,
+      y: yPos + 15
     });
 
-    const x = Math.random() * 300 - 150;
-    const y = Math.random() * 200 - 100;
+    const isMobile = window.innerWidth < 768;
+    const x = Math.random() * (isMobile ? 400 : 300) - 200;
+    const y = Math.random() * (isMobile ? 300 : 200) - 150;
     const rotate = Math.random() * 360;
 
     setNoStyle({
-      transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`
+      transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
+      transition: "transform 0.2s ease-out"
     });
   };
 
@@ -55,6 +55,7 @@ function App() {
     playMusic();
     setAnswer("yes");
     setShowConfetti(true);
+    navigator.vibrate?.(300);
   };
 
   return (
@@ -67,20 +68,15 @@ function App() {
         <source src={song} type="audio/mp3" />
       </audio>
 
-      {/* Tooltip */}
       {tooltip.show && (
-        <div
-          className="tooltip"
-          style={{ left: tooltip.x, top: tooltip.y }}
-        >
+        <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
           {tooltip.text}
         </div>
       )}
 
-      {/* Confetti */}
       {showConfetti && (
         <div className="confetti">
-          {Array.from({ length: 35 }).map((_, i) => (
+          {Array.from({ length: 40 }).map((_, i) => (
             <span key={i}>💖</span>
           ))}
         </div>
@@ -107,20 +103,8 @@ function App() {
               className="noBtn"
               style={noStyle}
               onMouseEnter={handleNoAttempt}
-              onMouseMove={(e) =>
-                setTooltip((t) => ({
-                  ...t,
-                  x: e.clientX + 15,
-                  y: e.clientY + 15
-                }))
-              }
-              onTouchStart={(e) => {
-                const touch = e.touches[0];
-                handleNoAttempt({
-                  clientX: touch.clientX,
-                  clientY: touch.clientY
-                });
-              }}
+              onTouchStart={handleNoAttempt}
+              onTouchMove={handleNoAttempt}
               onClick={(e) => e.preventDefault()}
             >
               No 🙈
@@ -129,7 +113,7 @@ function App() {
         )}
 
         {answer === "yes" && (
-          <h3 className="yes">
+          <h3 className="yesText">
             Yaaay! 💖 <br />
             You are stuck with me forever 😘 <br />
             Happy Valentine’s Day, my husband ❤️

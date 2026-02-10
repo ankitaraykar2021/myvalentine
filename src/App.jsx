@@ -13,113 +13,138 @@ const funnyMessages = [
 ];
 
 function App() {
+  const [started, setStarted] = useState(false);
   const [answer, setAnswer] = useState("");
-  const [noStyle, setNoStyle] = useState({});
+  const [noPos, setNoPos] = useState({ top: "60%", left: "55%" });
   const [tooltip, setTooltip] = useState({ show: false, text: "", x: 0, y: 0 });
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [hearts, setHearts] = useState([]);
 
   const audioRef = useRef(null);
 
-  const playMusic = () => {
-    audioRef.current?.play().catch(() => {});
+  const startExperience = () => {
+    if (!started && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+      setStarted(true);
+    }
   };
 
-  const handleNoAttempt = (e) => {
+  const moveNoButton = (e) => {
+    if (answer) return;
     e.preventDefault();
 
     const msg =
       funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
 
-    const xPos = e.clientX || e.touches?.[0]?.clientX || 100;
-    const yPos = e.clientY || e.touches?.[0]?.clientY || 100;
+    const x = e.clientX || e.touches?.[0]?.clientX || 100;
+    const y = e.clientY || e.touches?.[0]?.clientY || 100;
 
-    setTooltip({
-      show: true,
-      text: msg,
-      x: xPos + 15,
-      y: yPos + 15
-    });
+    setTooltip({ show: true, text: msg, x: x + 10, y: y + 10 });
 
-    const isMobile = window.innerWidth < 768;
-    const x = Math.random() * (isMobile ? 400 : 300) - 200;
-    const y = Math.random() * (isMobile ? 300 : 200) - 150;
-    const rotate = Math.random() * 360;
-
-    setNoStyle({
-      transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
-      transition: "transform 0.2s ease-out"
+    setNoPos({
+      top: `${Math.random() * 60 + 20}%`,
+      left: `${Math.random() * 60 + 20}%`
     });
   };
 
-  const handleYes = () => {
-    playMusic();
-    setAnswer("yes");
-    setShowConfetti(true);
-    navigator.vibrate?.(300);
-  };
+const handleYes = () => {
+  setAnswer("yes");
+  setTooltip({ show: false });
+
+  const createWave = (count, delayOffset = 0) =>
+    Array.from({ length: count }).map(() => ({
+      x: Math.random() * 500 - 250,
+      y: Math.random() * 500 - 250,
+      rotate: Math.random() * 360,
+      delay: delayOffset + Math.random() * 0.3,
+      size: Math.random() * 16 + 22
+    }));
+
+  const wave1 = createWave(50, 0);
+  const wave2 = createWave(40, 0.4);
+  const wave3 = createWave(30, 0.8);
+
+  setHearts([...wave1, ...wave2, ...wave3]);
+
+  navigator.vibrate?.([200, 100, 200]);
+};
+
+
 
   return (
-    <div
-      className="container"
-      style={{ backgroundImage: `url(${bgImage})` }}
-      onClick={playMusic}
-    >
+    <div className="container" style={{ backgroundImage: `url(${bgImage})` }}>
       <audio ref={audioRef} loop>
         <source src={song} type="audio/mp3" />
       </audio>
 
-      {tooltip.show && (
+      {/* ❤️ Heart Start Overlay */}
+      {!started && (
+        <div className="heartOverlay" onClick={startExperience}>
+          ❤️
+        </div>
+      )}
+
+      {tooltip.show && !answer && (
         <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
           {tooltip.text}
         </div>
       )}
 
-      {showConfetti && (
-        <div className="confetti">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <span key={i}>💖</span>
-          ))}
+   {hearts.map((h, i) => (
+  <span
+    key={i}
+    className="heartBlast"
+    style={{
+      "--x": `${h.x}px`,
+      "--y": `${h.y}px`,
+      "--r": `${h.rotate}deg`,
+      animationDelay: `${h.delay}s`,
+      fontSize: `${h.size}px`
+    }}
+  >
+    ❤️
+  </span>
+))}
+
+
+      {started && (
+        <div className="card">
+          <h1>💘 Happy Valentine’s Day 💘</h1>
+
+          <p className="message">
+            From the moment you came into my life, everything felt complete ❤️
+            <br />
+            I want to ask you something from my heart…
+          </p>
+
+          <h2>Will you be my Valentine forever? 💍</h2>
+          <h2> Don’t overthink it. You never do anyway 😄</h2>
+          {!answer && (
+            <div className="buttons">
+              <button className="yesBtn" onClick={handleYes}>
+                Yes 😍
+              </button>
+
+              <button
+                className="noBtn"
+                style={{ top: noPos.top, left: noPos.left }}
+                onMouseEnter={moveNoButton}
+                onTouchStart={moveNoButton}
+                onClick={(e) => e.preventDefault()}
+              >
+                No 🙈
+              </button>
+            </div>
+          )}
+
+          {answer === "yes" && (
+            <h3 className="yesText">
+              Yaaay! 💖 <br />
+              You are stuck with me forever 😘 <br />
+              Happy Valentine’s Day, my husband ❤️
+            </h3>
+          )}
         </div>
       )}
-
-      <div className="card">
-        <h1>💘 Happy Valentine’s Day 💘</h1>
-
-        <p className="message">
-          From the moment you came into my life, everything felt complete ❤️
-          <br />
-          I want to ask you something from my heart…
-        </p>
-
-        <h2>Will you be my Valentine forever? 💍</h2>
-
-        {!answer && (
-          <div className="buttons">
-            <button className="yesBtn" onClick={handleYes}>
-              Yes 😍
-            </button>
-
-            <button
-              className="noBtn"
-              style={noStyle}
-              onMouseEnter={handleNoAttempt}
-              onTouchStart={handleNoAttempt}
-              onTouchMove={handleNoAttempt}
-              onClick={(e) => e.preventDefault()}
-            >
-              No 🙈
-            </button>
-          </div>
-        )}
-
-        {answer === "yes" && (
-          <h3 className="yesText">
-            Yaaay! 💖 <br />
-            You are stuck with me forever 😘 <br />
-            Happy Valentine’s Day, my husband ❤️
-          </h3>
-        )}
-      </div>
     </div>
   );
 }
